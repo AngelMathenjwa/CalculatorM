@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scientific Calculator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #4b0082, #ff69b4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .calculator {
+      width: 400px;
+      background: #2c003e;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+
+    .display {
+      height: 100px;
+      background: #6a0dad;
+      color: #fff;
+      font-size: 2rem;
+      text-align: right;
+      padding: 15px;
+      border-bottom: 2px solid #ff69b4;
+      box-sizing: border-box;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      padding: 15px;
+      background: #3b006e;
+    }
+
+    .btn {
+      background: #8e44ad;
+      color: white;
+      border: none;
+      padding: 15px;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #ff69b4;
+      transform: scale(1.1);
+    }
+
+    .operator {
+      background: #ff69b4;
+    }
+
+    .operator:hover {
+      background: #ff1493;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .large {
+      grid-column: span 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="btn" onclick="clearDisplay()">C</button>
+      <button class="btn operator" onclick="appendOperator('(')">(</button>
+      <button class="btn operator" onclick="appendOperator(')')">)</button>
+      <button class="btn operator" onclick="chooseOperator('/')">÷</button>
+      <button class="btn operator" onclick="chooseOperator('*')">×</button>
+      <button class="btn" onclick="appendNumber(7)">7</button>
+      <button class="btn" onclick="appendNumber(8)">8</button>
+      <button class="btn" onclick="appendNumber(9)">9</button>
+      <button class="btn operator" onclick="chooseOperator('-')">−</button>
+      <button class="btn operator" onclick="chooseOperator('+')">+</button>
+      <button class="btn" onclick="appendNumber(4)">4</button>
+      <button class="btn" onclick="appendNumber(5)">5</button>
+      <button class="btn" onclick="appendNumber(6)">6</button>
+      <button class="btn operator" onclick="calculate()">=</button>
+      <button class="btn operator" onclick="appendOperator('.')">.</button>
+      <button class="btn" onclick="appendNumber(1)">1</button>
+      <button class="btn" onclick="appendNumber(2)">2</button>
+      <button class="btn" onclick="appendNumber(3)">3</button>
+      <button class="btn" onclick="appendNumber(0)" class="large">0</button>
+      <button class="btn operator" onclick="appendOperator('^')">xʸ</button>
+      <button class="btn operator" onclick="squareRoot()">√</button>
+      <button class="btn operator" onclick="appendOperator('sin(')">sin</button>
+      <button class="btn operator" onclick="appendOperator('cos(')">cos</button>
+      <button class="btn operator" onclick="appendOperator('tan(')">tan</button>
+    </div>
+  </div>
+  <script>
+    let currentInput = "";
+    let isResultDisplayed = false;
+
+    const display = document.getElementById("display");
+
+    function appendNumber(number) {
+      if (isResultDisplayed) {
+        currentInput = "";
+        isResultDisplayed = false;
+      }
+      currentInput += number;
+      updateDisplay();
+    }
+
+    function appendOperator(operator) {
+      if (isResultDisplayed) {
+        isResultDisplayed = false;
+      }
+      currentInput += operator;
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      display.innerText = currentInput || "0";
+    }
+
+    function chooseOperator(op) {
+      if (isResultDisplayed) {
+        isResultDisplayed = false;
+      }
+      currentInput += ` ${op} `;
+      updateDisplay();
+    }
+
+    function calculate() {
+      try {
+        const sanitizedInput = currentInput
+          .replace(/÷/g, "/")
+          .replace(/×/g, "*")
+          .replace(/xʸ/g, "**");
+        const result = eval(sanitizedInput);
+        currentInput = result.toString();
+        isResultDisplayed = true;
+        updateDisplay();
+      } catch (error) {
+        currentInput = "Error";
+        isResultDisplayed = true;
+        updateDisplay();
+      }
+    }
+
+    function squareRoot() {
+      try {
+        const result = Math.sqrt(parseFloat(currentInput));
+        currentInput = result.toString();
+        isResultDisplayed = true;
+        updateDisplay();
+      } catch (error) {
+        currentInput = "Error";
+        isResultDisplayed = true;
+        updateDisplay();
+      }
+    }
+
+    function clearDisplay() {
+      currentInput = "";
+      updateDisplay();
+    }
+
+    document.addEventListener("keydown", (event) => {
+      const key = event.key;
+
+      if (!isNaN(key)) {
+        appendNumber(key);
+      } else if (key === "+" || key === "-" || key === "*" || key === "/") {
+        chooseOperator(key);
+      } else if (key === "Enter" || key === "=") {
+        calculate();
+      } else if (key === "Backspace") {
+        currentInput = currentInput.slice(0, -1);
+        updateDisplay();
+      } else if (key === "c" || key === "C") {
+        clearDisplay();
+      } else if (key === "(" || key === ")") {
+        appendOperator(key);
+      } else if (key === ".") {
+        appendOperator(".");
+      }
+    });
+  </script>
+</body>
+</html>
